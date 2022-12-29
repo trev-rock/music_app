@@ -14,6 +14,7 @@ keys = {
     "Eb":["Eb","F","G","Ab","Bb","C","D"], # key of Eb
     "A":["A","B","C#","D","E","F#","G#"], # key of A
     } 
+
  
 # chord inversion practice, they all have everything twice this way the odds of them appearing in conjunction with sus chords becomes more even, otherwise the sus chords get called too often. this is a not so good bandage situation
 inversions_1 = ["no 7", "first inversion no 7", "second inversion no 7"]
@@ -75,172 +76,209 @@ def generate_chord(values):
         inversion = inversions_2
     elif values[10]:
         inversion = inversions_3
-    
     elif values[11]:
         inversion = sus_inversions
-
 
     note = choice(scale)
 
     return f"{note} {choice(inversion)}", key, '  '.join(scale), note  # choose a random note from the key and which inversion 
  
-# scale practice layout
-scale_mode_practice = [
+
+pentatonics = ["major pentatonic", "egyptian", "blues minor", "blues major", "minor pentatonic"]
+pent_keys = {
+    "C":["C","D","E","G","A"],
+    "F":["F","G","A","C","D"],
+    "G":["G","A","B","D","E"],
+    "Bb":["Bb","C","D","F","G"],
+    "D":["D","E","F#","A","B"],
+    "Eb":["Eb","F","G","Bb","C"],
+    "A":["A","B","C#","E","F#"]
+}
+pentatonic_practice = [
     [sg.Text("Choose a key:")],
-    [sg.Radio("Key of C", "radio_1",default=False)],
-    [sg.Radio("Key of F", "radio_1",default=False)],
-    [sg.Radio("Key of G", "radio_1",default=False)],
-    [sg.Radio("Key of Bb", "radio_1",default=False)],
-    [sg.Radio("Key of D", "radio_1",default=False)],
-    [sg.Radio("Key of Eb", "radio_1",default=False)],
-    [sg.Radio("Key of A", "radio_1",default=False)],
-    [sg.Radio("Random", "radio_1",default=False)],
-    [sg.Text("Choose Diatonic or Pentatonic:")],
-    [sg.Radio("Diatonic  ", "radio_3"),sg.Radio("Pentatonic", "radio_3")],
-    [sg.Radio("ionnian   ", "diatonic_mode"), sg.Radio("major pentatonic", "pentatonic_mode")],
-    [sg.Radio("dorianc   ", "diatonic_mode"), sg.Radio("egyptian", "pentatonic_mode")],
-    [sg.Radio("phrygian  ", "diatonic_mode"), sg.Radio("blues minor", "pentatonic_mode")],
-    [sg.Radio("lydian    ", "diatonic_mode"), sg.Radio("blues major", "pentatonic_mode")],
-    [sg.Radio("mixolydian", "diatonic_mode"), sg.Radio("minor pentatonic", "pentatonic_mode")],
-    [sg.Radio("aeolian   ", "diatonic_mode"), sg.Radio("Random", "pentatonic_mode")],
-    [sg.Radio("locrian   ", "diatonic_mode")],
-    [sg.Radio("Random    ", "diatonic_mode")],
-    [sg.Button("Generate Scale"), sg.Button("Hint pls"), sg.Button("Return")],
+    [sg.Radio("Key of C", "radio_1",default=False, key="pentatonic_c")],
+    [sg.Radio("Key of F", "radio_1",default=False, key="pentatonic_f")],
+    [sg.Radio("Key of G", "radio_1",default=False, key="pentatonic_g")],
+    [sg.Radio("Key of Bb", "radio_1",default=False, key="pentatonic_bb")],
+    [sg.Radio("Key of D", "radio_1",default=False, key="pentatonic_d")],
+    [sg.Radio("Key of Eb", "radio_1",default=False, key="pentatonic_eb")],
+    [sg.Radio("Key of A", "radio_1",default=False, key="pentatonic_a")],
+    [sg.Radio("Random", "radio_1",default=False, key="pentatonic_random_key")],
+    [sg.Text("Choose a mode:")],
+    [sg.Radio("major pentatonic", "pentatonic_mode", key="major_pent")],
+    [sg.Radio("egyptian        ", "pentatonic_mode", key="egyptian")],
+    [sg.Radio("blues minor     ", "pentatonic_mode", key="blues minor")],
+    [sg.Radio("blues major     ", "pentatonic_mode", key="blues major")],
+    [sg.Radio("minor pentatonic", "pentatonic_mode", key="minor_pent")],
+    [sg.Radio("Random          ", "pentatonic_mode", key="random_pentatonic_mode")],
+    [sg.Button("Generate Pentatonic Scale"), sg.Button("Halp"), sg.Button("Recall")],
+    [sg.Text(key="scale_to_show_2", font=("Courier",25))],
+    [sg.Text(key="scale_hint_2", font=("Courier",25))],
+]
+
+def generate_pentatonic_scale(values):
+    if values["pentatonic_c"] == True:
+        key, temp_scale = "C",copy(pent_keys["C"]) #C 
+    elif values["pentatonic_f"] == True:
+        key, temp_scale = "F",copy(pent_keys["F"]) #F 
+    elif values["pentatonic_g"] == True:
+        key, temp_scale = "G",copy(pent_keys["G"]) #G
+    elif values["pentatonic_bb"] == True:
+        key, temp_scale = "Bb",copy(pent_keys["Bb"]) #Bb
+    elif values["pentatonic_d"] == True:
+        key, temp_scale = "D",copy(pent_keys["D"]) #D
+    elif values["pentatonic_eb"] == True:
+        key, temp_scale = "Eb",copy(pent_keys["Eb"]) #Eb
+    elif values["pentatonic_a"] == True:
+        key, temp_scale = "A",copy(pent_keys["A"]) #A
+    elif values["pentatonic_random_key"] == True: 
+        key, temp_scale = copy(choice(list(pent_keys.items())))
+
+    if values["major_pent"] == True:
+        mode = "major pentatonic"
+    elif values["egyptian"] == True:
+        mode = "egyptian"
+    elif values["blues minor"] == True:
+        mode = "blues minor"
+    elif values["blues major"] == True:
+        mode = "blues major"
+    elif values["minor_pent"] == True:
+        mode = "minor pentatonic"
+    elif values["random_pentatonic_mode"] == True:
+        mode = choice(pentatonics)
+
+    if mode == "major pentatonic":
+        scale = temp_scale
+    elif mode == "egyptian":
+        scale = temp_scale[1:]
+        scale.append(temp_scale[0])
+    elif mode == "blues minor":
+        scale = temp_scale[2:]
+        scale.append(temp_scale[0])
+        scale.append(temp_scale[1])
+    elif mode == "blues major":
+        scale = temp_scale[3:]
+        scale.append(temp_scale[0])
+        scale.append(temp_scale[1])
+        scale.append(temp_scale[2])
+    elif mode == "minor pentatonic":
+        scale = temp_scale[4:]
+        scale.append(temp_scale[0])
+        scale.append(temp_scale[1])
+        scale.append(temp_scale[2])
+        scale.append(temp_scale[3])
+    scale = ' '.join(scale)
+        
+    return key, scale, mode
+
+diatonics = ["ionian", "dorian", "phrygian", "lydian", "mixolydian", "aeolian", "locrian"]
+# diatonic practice layout
+diatonic_practice = [
+    [sg.Text("Choose a key:")],
+    [sg.Radio("Key of C", "radio_1",default=False, key="diatonic_c")],
+    [sg.Radio("Key of F", "radio_1",default=False, key="diatonic_f")],
+    [sg.Radio("Key of G", "radio_1",default=False, key="diatonic_g")],
+    [sg.Radio("Key of Bb", "radio_1",default=False, key="diatonic_bb")],
+    [sg.Radio("Key of D", "radio_1",default=False, key="diatonic_d")],
+    [sg.Radio("Key of Eb", "radio_1",default=False, key="diatonic_eb")],
+    [sg.Radio("Key of A", "radio_1",default=False, key="diatonic_a")],
+    [sg.Radio("Random", "radio_1",default=False, key="diatonic_random_key")],
+    [sg.Text("Choose a mode:")],
+    [sg.Radio("ionnian   ", "diatonic_mode", key="ionian")],
+    [sg.Radio("dorian    ", "diatonic_mode", key="dorian")],
+    [sg.Radio("phrygian  ", "diatonic_mode", key="phrygian")],
+    [sg.Radio("lydian    ", "diatonic_mode", key="lydian")],
+    [sg.Radio("mixolydian", "diatonic_mode", key="mixolydian")],
+    [sg.Radio("aeolian   ", "diatonic_mode", key="aeolian")],
+    [sg.Radio("locrian   ", "diatonic_mode", key="locrian")],
+    [sg.Radio("Random    ", "diatonic_mode", key="random_diatonic_mode")],
+    [sg.Button("Generate Diatonic Scale"), sg.Button("Hint pls"), sg.Button("Return")],
     [sg.Text(key="scale_to_show", font=("Courier",25))],
     [sg.Text(key="scale_hint", font=("Courier",25))],
     [sg.Text(key="factoid", font=("Courier",18))]
     ]
  
-diatonics = ["ionian", "dorian", "phrygian", "lydian", "mixolydian", "aeolian", "locrian"]
-pentatonics = ["major pentatonic", "egyptian", "blues minor", "blues major", "minor pentatonic"]
- 
 # main function of scale practice 
-def generate_scale(values):
-    if values[12] == True:
+def generate_diatonic_scale(values):
+    if values["diatonic_c"] == True:
         key, temp_scale = "C",copy(keys["C"]) #C 
-    elif values[13] == True:
+    elif values["diatonic_f"] == True:
         key, temp_scale = "F",copy(keys["F"]) #F 
-    elif values[14] == True:
+    elif values["diatonic_g"] == True:
         key, temp_scale = "G",copy(keys["G"]) #G
-    elif values[15] == True:
+    elif values["diatonic_bb"] == True:
         key, temp_scale = "Bb",copy(keys["Bb"]) #Bb
-    elif values[16] == True:
+    elif values["diatonic_d"] == True:
         key, temp_scale = "D",copy(keys["D"]) #D
-    elif values[17] == True:
+    elif values["diatonic_eb"] == True:
         key, temp_scale = "Eb",copy(keys["Eb"]) #Eb
-    elif values[18] == True:
+    elif values["diatonic_a"] == True:
         key, temp_scale = "A",copy(keys["A"]) #A
-    elif values[19] == True: 
+    elif values["diatonic_random_key"] == True: 
         key, temp_scale = copy(choice(list(keys.items())))
  
-    # if you ever decide to condense this stuff just make a while loop and after choosing random loop back up and go through the modes and combine everything, too lazy to rn. also when you do it itll be if value[x] == true or mode == mode_name
-    if values[20] == True: # if diatonic was chosen, we will have the rest in this if statement to ignore anything from pentatonic if anything in that column was chosen as an easy workaround
-        if values[22] == True:
-            mode = "ionian"
-        elif values[24] == True:
-            mode = "dorian"
-        elif values[26] == True:
-            mode = "phrygian"
-        elif values[28] == True:
-            mode = "lydian"
-        elif values[30] == True:
-            mode = "mixolydian"
-        elif values[32] == True:
-            mode = "aeolian"
-        elif values[34] == True:
-            mode = "locrian"
-        elif values[35] == True:
-            mode = choice(diatonics)
-        # reorder the scale
-        if mode == "ionian":
-            scale = temp_scale
-            note = "original scale"
-        elif mode == "dorian":
-            scale = temp_scale[1:]
-            scale.append(temp_scale[0])
-            note = "flat 3, flat 7"
-        elif mode == "phrygian":
-            scale = temp_scale[2:]
-            scale.append(temp_scale[0])
-            scale.append(temp_scale[1])
-            note = "flat 2, flat 3, flat 6, flat 7"
-        elif mode == "lydian":
-            scale = temp_scale[3:]
-            scale.append(temp_scale[0])
-            scale.append(temp_scale[1])
-            scale.append(temp_scale[2])
-            note = "sharp 4"
-        elif mode == "mixolydian":
-            scale = temp_scale[4:]
-            scale.append(temp_scale[0])
-            scale.append(temp_scale[1])
-            scale.append(temp_scale[2])
-            scale.append(temp_scale[3])
-            note = "flat 7"
-        elif mode == "aeolian":
-            scale = temp_scale[5:]
-            scale.append(temp_scale[0])
-            scale.append(temp_scale[1])
-            scale.append(temp_scale[2])
-            scale.append(temp_scale[3])
-            scale.append(temp_scale[4])
-            note = "flat 3, flat 6, flat 7"
-        elif mode == "locrian":
-            scale = temp_scale[6:]
-            scale.append(temp_scale[0])
-            scale.append(temp_scale[1])
-            scale.append(temp_scale[2])
-            scale.append(temp_scale[3])
-            scale.append(temp_scale[4])
-            scale.append(temp_scale[5])
-            note = "flat 2, flat 3, flat 5, flat 6, flat 7"
-        scale = ' '.join(scale)
- 
-    elif values[21]: # if this is true then we also need to remove specific values from our scale before we do anything with it, take out the 4 and 7 
-        temp_scale.pop(3) # remove the 4
-        temp_scale.pop() # remove the 7
-        if values[23]:
-            mode = "major pentatonic"
-        elif values[25]:
-            mode = "egyptian"
-        elif values[27]:
-            mode = "blues minor"
-        elif values[29]:
-            mode = "blues major"
-        elif values[31]:
-            mode = "minor pentatonic"
-        elif values[33]:
-            mode = choice(pentatonics)
-            print(mode)
-        # reorder the scale
-        if mode == "major pentatonic":
-            scale = temp_scale # unchanged
-        elif mode == "egyptian":
-            scale = temp_scale[1:]
-            scale.append(temp_scale[0])
-        elif mode == "blues minor":
-            scale = temp_scale[2:]
-            scale.append(temp_scale[0])
-            scale.append(temp_scale[1])
-        elif mode == "blues major":
-            scale = temp_scale[3:]
-            scale.append(temp_scale[0])
-            scale.append(temp_scale[1])
-            scale.append(temp_scale[2])
-        elif mode == "minor pentatonic":
-            scale = temp_scale[4:]
-            scale.append(temp_scale[0])
-            scale.append(temp_scale[1])
-            scale.append(temp_scale[2])
-            scale.append(temp_scale[3])
-        scale = ' '.join(scale)
-        note = ''
+    if values["ionian"] == True:
+        mode = "ionian"
+    elif values["dorian"] == True:
+        mode = "dorian"
+    elif values["phrygian"] == True:
+        mode = "phrygian"
+    elif values["lydian"] == True:
+        mode = "lydian"
+    elif values["mixolydian"] == True:
+        mode = "mixolydian"
+    elif values["aeolian"] == True:
+        mode = "aeolian"
+    elif values["locrian"] == True:
+        mode = "locrian"
+    elif values["random_diatonic_mode"] == True:
+        mode = choice(diatonics)
+    # reorder the scale
+    if mode == "ionian":
+        scale = temp_scale
+        note = "original scale"
+    elif mode == "dorian":
+        scale = temp_scale[1:]
+        scale.append(temp_scale[0])
+        note = "flat 3, flat 7"
+    elif mode == "phrygian":
+        scale = temp_scale[2:]
+        scale.append(temp_scale[0])
+        scale.append(temp_scale[1])
+        note = "flat 2, flat 3, flat 6, flat 7"
+    elif mode == "lydian":
+        scale = temp_scale[3:]
+        scale.append(temp_scale[0])
+        scale.append(temp_scale[1])
+        scale.append(temp_scale[2])
+        note = "sharp 4"
+    elif mode == "mixolydian":
+        scale = temp_scale[4:]
+        scale.append(temp_scale[0])
+        scale.append(temp_scale[1])
+        scale.append(temp_scale[2])
+        scale.append(temp_scale[3])
+        note = "flat 7"
+    elif mode == "aeolian":
+        scale = temp_scale[5:]
+        scale.append(temp_scale[0])
+        scale.append(temp_scale[1])
+        scale.append(temp_scale[2])
+        scale.append(temp_scale[3])
+        scale.append(temp_scale[4])
+        note = "flat 3, flat 6, flat 7"
+    elif mode == "locrian":
+        scale = temp_scale[6:]
+        scale.append(temp_scale[0])
+        scale.append(temp_scale[1])
+        scale.append(temp_scale[2])
+        scale.append(temp_scale[3])
+        scale.append(temp_scale[4])
+        scale.append(temp_scale[5])
+        note = "flat 2, flat 3, flat 5, flat 6, flat 7"
+    scale = ' '.join(scale)
+        
     return key, scale, mode, note
- # we will use key in the hint, scale is what will be used for cycling 
- # the keys are values 11 through 18
- # diatonic/pent are 19 and 20
- # diatonic modes: 21, 23, 25, 27, 29, 31, 33, 34
- # pentatonic modes: 22, 24, 26, 28, 30, 32
  
 
 # timing practice
@@ -265,7 +303,8 @@ def generate_sequence(sequence,x): # the sequence list to modify and x is the nu
 main_menu = [
     [sg.Text('Select a practice tool:')],
     [sg.Button('Chord Inversion Practice')],
-    [sg.Button('Scale Practice')],
+    [sg.Button('Diatonic Scale Practice')],
+    [sg.Button('Pentatonic Scale Practice')],
     [sg.Button('Timing Practice')],
     [sg.Button('Exit')]
     ]
@@ -273,11 +312,12 @@ main_menu = [
 layout = [
     [sg.Column(main_menu, key="screen_0"),
     sg.Column(chord_inversion_practice, key="screen_1",visible=False),
-    sg.Column(scale_mode_practice, key="screen_2",visible=False),
-    sg.Column(timing_practice, key="screen_3",visible=False)]
+    sg.Column(diatonic_practice, key="screen_2",visible=False),
+    sg.Column(pentatonic_practice, key="screen_3", visible=False),
+    sg.Column(timing_practice, key="screen_4",visible=False)]
     ]
  
-window = sg.Window("Guitar Inversion Practice Tool", layout,size=(625, 650), font="Courier")
+window = sg.Window("Music Practice Tool", layout,size=(625, 650), font="Courier")
  
  
 while True:
@@ -286,12 +326,15 @@ while True:
     if event == "Chord Inversion Practice":
         window["screen_0"].update(visible=False)
         window["screen_1"].update(visible=True)
-    if event == "Scale Practice":
+    if event == "Diatonic Scale Practice":
         window["screen_0"].update(visible=False)
         window["screen_2"].update(visible=True)
-    if event == "Timing Practice":
+    if event == "Pentatonic Scale Practice":
         window["screen_0"].update(visible=False)
         window["screen_3"].update(visible=True)
+    if event == "Timing Practice":
+        window["screen_0"].update(visible=False)
+        window["screen_4"].update(visible=True)
  
     # activating the main function
     if event == "Generate Chord":
@@ -302,20 +345,30 @@ while True:
             window['first_half'].update("")
             window['note'].update("")
             window['second_half'].update("") 
-        except:
+        except Exception as e:
             sg.popup_error("make sure two parameters are selected")
             continue
  
-    if event == "Generate Scale":
+    if event == "Generate Diatonic Scale":
         try:
-            key, scale, mode, note = generate_scale(values)
+            key, scale, mode, note = generate_diatonic_scale(values)
             window["scale_to_show"].update(f"scale: {scale[0:2]} {mode}") # want to show scale: first note mode, hint 
             window['scale_hint'].update('')
             window['factoid'].update('')
-        except:
-            sg.popup_error('make sure all necessary parameters are selected')
+        except Exception as e:
+            sg.popup_error(e)
     
-    if event == "Generate Sequence":
+    if event == "Generate Pentatonic Scale":
+        # try:
+        key, scale, mode = generate_pentatonic_scale(values)
+        window["scale_to_show_2"].update(f"scale: {scale[0:2]} {mode}") 
+        window['scale_hint_2'].update('')
+        # except Exception as e:
+        #     sg.popup_error(e)
+
+
+    
+    if event == "Generate Sequence": # this needs to be fixed because the values index number will be off due to the split of pent/diatonic scales, just use keys for these though 
         if values[36] == True: # making 8 bit sequence 
             sequence_guide = "1 & 2 & 3 & 4 &"
             sequence = [" "," "," "," "," "," "," "," "]
@@ -346,8 +399,14 @@ while True:
         try:
             window["scale_hint"].update(f"key: {key}\nscale: {scale}")
             window['factoid'].update(note)
-        except:
-            sg.popup_error("must have a scale already chosen")
+        except Exception as e:
+            sg.popup_error(e)
+    
+    if event == "Halp":
+        try:
+            window["scale_hint_2"].update(f"key: {key}\nscale: {scale}")
+        except Exception as e:
+            sg.popup_error(e)
  
     if event == "Easy Mode":
         try:
@@ -359,8 +418,8 @@ while True:
                 window['display_key'].update("key:")
             window['note'].update(value=scale[note_index:note_index+2], text_color="yellow")
             window['second_half'].update(scale[note_index+3:])
-        except:
-            sg.popup_error("generate a chord first")
+        except Exception as e:
+            sg.popup_error(e)
             continue
  
     # returning back to the menu, idk why i can't use the same word for everything so this is a bit sloppy here but it works 
@@ -370,8 +429,11 @@ while True:
     if event == "Return":
         window['screen_2'].update(visible=False)
         window['screen_0'].update(visible=True)
-    if event == "Menu":
+    if event == "Recall":
         window['screen_3'].update(visible=False)
+        window['screen_0'].update(visible=True)
+    if event == "Menu":
+        window['screen_4'].update(visible=False)
         window['screen_0'].update(visible=True)
  
     elif event == sg.WIN_CLOSED or event == "Exit":
